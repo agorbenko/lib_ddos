@@ -19,9 +19,65 @@ from .managers import Manager
 from .utils import Log_Levels
 from .graphers import Combination_Grapher
 
+
 def main():
     """Runs simulations with command line arguments"""
 
+
+    model_folder = os.path.join(os.getcwd(), "model")
+    if os.path.exists(model_folder):
+        import tensorflow as tf
+        model = tf.keras.models.load_model(model_folder + "/tf_model")
+    if not os.path.exists(model_folder):
+        os.makedirs(model_folder)
+
+        import tensorflow as tf
+
+        import pandas as pd
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from sklearn import preprocessing
+    
+        from subprocess import check_call
+        check_call("wget https://raw.githubusercontent.com/jfuruness/ddos_fvecs/main/ddos_fvecs.csv", shell=True)
+    
+        # There are only two columns in this data
+        data = pd.read_csv('ddos_fvecs.csv')
+        check_call("rm ddos_fvecs.csv", shell=True)
+        print(data.shape)
+        # Make this a 2d array of size NXD where D=1 rather than a 1D array of length N
+        X = data.iloc[:, :-1]#preprocessing.MinMaxScaler().fit_transform(data.iloc[:, :-1])
+        Y = data.iloc[:, -1]
+    
+        model = tf.keras.models.Sequential([
+          tf.keras.layers.Flatten(input_shape=[9]),
+          tf.keras.layers.Dense(32, activation="relu"),
+          tf.keras.layers.Dropout(.2),
+          tf.keras.layers.Dense(16, activation="relu"),
+          tf.keras.layers.Dropout(.1),
+          tf.keras.layers.Dense(8, activation="relu"),
+          tf.keras.layers.Dropout(.05),
+          tf.keras.layers.Dense(2, activation="sigmoid")
+        ])
+    
+        # Learning rate scheduler
+        def schedule(epoch, lr):
+          if epoch >= 50:
+            return 0.0001
+          else:
+            return 0.001
+    
+        scheduler = tf.keras.callbacks.LearningRateScheduler(schedule)
+        model.compile(optimizer="adam",
+                      loss="sparse_categorical_crossentropy",
+                      metrics=["accuracy"])
+        r = model.fit(X, Y, epochs=1, callbacks=[scheduler])
+    
+    
+        plt.plot(r.history['loss'], label='loss')
+        model.save(os.path.join(model_folder, "tf_model"))
+
+    
     parser = ArgumentParser(description="Runs a DDOS simulation")
     parser.add_argument("--num_users", type=int, dest="num_users", default=21)
     parser.add_argument("--num_attackers", type=int, dest="num_attackers", default=9)

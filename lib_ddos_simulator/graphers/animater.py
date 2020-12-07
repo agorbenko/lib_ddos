@@ -99,6 +99,7 @@ class Animater(Base_Grapher):
         else:
             self.row_cutoff = 32
         assert self.tikz is False, "Can't save animation as tikz afaik"
+        manager.model = None
         self.manager = manager
         self.ogbuckets = deepcopy(manager.buckets)
         self.max_users, self.fig, self.ax = self._format_graph()
@@ -335,6 +336,27 @@ class Animater(Base_Grapher):
             y += bucket.patch_height
             x = Bucket.patch_padding
 
+    def __init_user_p(self, user):
+            if user.bucket is None or user.bucket.patch is None:
+                bucket_patch_center = self.disconnected_location[0]
+            else:
+                bucket_patch_center = user.bucket.patch_center()
+            user.patch = plt.Circle((bucket_patch_center, 5),
+                                    User.patch_radius,
+                                    fc=user.og_face_color)
+            if isinstance(user, Attacker):
+                user.horns = plt.Polygon(0 * self.get_horn_array(user),
+                                         fc=user.og_face_color,
+                                         **dict(ec="k"))
+                user.horns.set_linewidth(.4 if self.high_res else .5)
+            user.text = plt.text(bucket_patch_center,
+                                 5,
+                                 f"{user.id}",
+                                 horizontalalignment='center',
+                                 verticalalignment='center')
+            self.user_patches.append(user.patch)
+
+
 
     def _create_user_patches(self):
         """Creates patches of users"""
@@ -376,7 +398,9 @@ class Animater(Base_Grapher):
         zorder = 2
         max_sus = 0
         for user in self.users:
-            max_sus = max(max(user.suspicions), max_sus)
+            max_sus = 0
+            if not hasattr(user, "patch"):
+                self.__init_user_p(user)
             user.patch.center = user.points[0]
 
             self.ax.add_patch(user.patch)

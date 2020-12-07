@@ -37,7 +37,7 @@ class User:
         self.suspicions = []
         # Expected connection lifetime
         # This was hardcoded in DOSE paper
-        self.exp_conn_lt = 100
+        self.exp_conn_lt = 20
         # Connection lifetime (incriments each round)
         self.conn_lt = 0
         self.dose_atk_risk = 0
@@ -72,7 +72,7 @@ class User:
 
         fvec = self.fvec + [int(isinstance(self, Attacker))]
 
-        if "animate" not in str(sys.argv):
+        if "animate" not in str(sys.argv) and "DL" not in manager.__class__.__name__:
             time.sleep(.0001)
             User.f.write(",".join(str(x) for x in fvec) + "\n")
 

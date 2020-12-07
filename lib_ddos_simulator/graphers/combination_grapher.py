@@ -49,7 +49,7 @@ class Combination_Grapher(Base_Grapher):
 
     def run(self,
             ddos_sim_cls_list=None,
-            managers=Manager.runnable_managers,
+            managers=Manager.runnable_managers,#[x for x in Manager.runnable_managers if "DL" not in str(x.__name__)],
             attackers=Attacker.runnable_attackers,
             # Note that for range, last number is not included
             num_buckets_list=[1],
@@ -141,7 +141,7 @@ class Combination_Grapher(Base_Grapher):
 
         for attacker in attackers:
             self.print_progress(attacker, total_num)
-            percent_attackers_list = [i / 100 for i in range(1, 52, 5)]
+            percent_attackers_list = [i / 100 for i in range(10, 52, 20)]
 
             for manager in managers:
                 manager_data = scenario_data[manager][attacker]

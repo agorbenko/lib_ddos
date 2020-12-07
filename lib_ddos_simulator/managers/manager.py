@@ -175,6 +175,13 @@ class Manager:
                             else self.next_unused_id)
             if user_id is not None:
                 self.next_unused_id += 1
+        except TypeError:
+            input("not working, forget it")
+            user = user_cls(user_id if user_id is not None
+                            else self.next_unused_id)
+            if user_id is not None:
+                self.next_unused_id += 1
+
 
         return user
 

@@ -8,7 +8,7 @@ __maintainer__ = "Justin Furuness"
 __email__ = "jfuruness@gmail.com, agorbenko97@gmail.com"
 __status__ = "Development"
 
-from random import random
+import random
 
 from .attacker import Attacker
 
@@ -20,7 +20,7 @@ class Random_Attacker(Attacker):
 
     def _attack(self, manager, turn):
         random.seed(str(manager.json) + str(turn))
-        if random() < self._percent_chance_attack:
+        if random.random() < self._percent_chance_attack:
             self.bucket.attacked = True
 
 

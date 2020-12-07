@@ -8,6 +8,8 @@ __maintainer__ = "Justin Furuness"
 __email__ = "jfuruness@gmail.com, agorbenko97@gmail.com"
 __status__ = "Development"
 
+
+from .dl_manager import DL_Manager
 from .dose import DOSE_Manager, DOSE_Attack_Event
 # Commented out due to bugs in sudo code of their paper
 # from .motag import Motag_Manager

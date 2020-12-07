@@ -34,22 +34,18 @@ class Fluid_DDOS_Simulator(DDOS_Simulator):
 
         current_good_users = len([1 for x in manager.connected_users
                                  if not isinstance(x, Attacker)])
-        current_attackers = len(manager.connected_users) - current_good_users
-        current_percent_users = current_good_users / len(manager.connected_users)
-        connected = len(manager.connected_users)
 
         ids = []
         while random.random() > og_percent_users:
             _id = self.next_unused_user_id
             self.next_unused_user_id += 1
+            current_good_users += 1
             ids.append(_id)
-        while current_percent_users < og_percent_users:
+        while current_good_users < self.og_num_users:
             _id = self.next_unused_user_id
             self.next_unused_user_id += 1
             ids.append(_id)
             current_good_users += 1
-            connected += 1
-            current_percent_users = current_good_users / connected
 
         return ids
 
@@ -64,11 +60,8 @@ class Fluid_DDOS_Simulator(DDOS_Simulator):
         og_users = self.og_num_attackers + self.og_num_users
         percent_attackers = self.og_num_attackers / og_users
 
-        current_good_users = len([1 for x in manager.connected_users
-                                 if not isinstance(x, Attacker)])
-        current_attackers = len(manager.connected_users) - current_good_users
-        current_percent_attackers = current_attackers / len(manager.connected_users)
-        connected = len(manager.connected_users)
+        current_attackers = len([1 for x in manager.connected_users
+                                 if isinstance(x, Attacker)])
 
         ids = []
 
@@ -77,14 +70,11 @@ class Fluid_DDOS_Simulator(DDOS_Simulator):
             self.next_unused_user_id += 1
             ids.append(_id)
             current_attackers += 1
-            connected += 1
 
-        while current_percent_attackers < percent_attackers:
+        while current_attackers < self.og_num_attackers / 5:
             _id = self.next_unused_user_id
             self.next_unused_user_id += 1
             ids.append(_id)
             current_attackers+=1
-            connected += 1
-            current_percent_attackers = current_attackers / connected
 
         return ids
