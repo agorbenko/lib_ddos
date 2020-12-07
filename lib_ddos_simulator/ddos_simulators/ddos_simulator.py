@@ -15,7 +15,7 @@ import random
 from tqdm import trange
 
 from ..graphers import Animater, Grapher
-from ..attackers import Attacker, Basic_Attacker, Mixed_Attacker
+from ..attackers import Attacker, Basic_Attacker
 from .. import managers
 from ..simulation_objects import User
 from .. import utils
@@ -215,15 +215,8 @@ class DDOS_Simulator:
     def get_attackers(self, num_attackers, attacker_cls):
         """Initializes attackers for sim"""
 
-        # This allows us to take mixes of attackers
-        if isinstance(attacker_cls, Mixed_Attacker):
-            # get_mix returns a list of attacker classes
-            return [X(i+len(self.good_users)) for i, X in
-                    enumerate(attacker_cls.get_mix(num_attackers))]
-        # If it is not a mixed attacker, simply initialize attackers
-        else:
-            return [attacker_cls(x + len(self.good_users))
-                    for x in range(num_attackers)]
+        return [attacker_cls(x + len(self.good_users))
+                for x in range(num_attackers)]
 
     def connect_disconnect_users(self, manager, round_num):
         """Connects and disconnects users"""

@@ -35,15 +35,3 @@ class Fifty_Percent_Lone_Attacker(Fifty_Percent_Attacker):
     """Attacks at 50% of the time, if no attacker attacked it's bucket"""
 
     lone = True
-
-
-class Ten_Percent_Attacker(Random_Attacker):
-    """Attacks at random 10% of the time"""
-
-    _percent_chance_attack = .1
-    runnable = True
-
-class Ten_Percent_Lone_Attacker(Ten_Percent_Attacker):
-    """Attacks at 10% of the time, if no attacker attacked it's bucket"""
-
-    lone = True

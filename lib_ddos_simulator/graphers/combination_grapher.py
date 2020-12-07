@@ -54,9 +54,9 @@ class Combination_Grapher(Base_Grapher):
             # Note that for range, last number is not included
             num_buckets_list=[1],
             # Note that this is the users per bucket, not total users
-            users_per_bucket_list=[10 ** i for i in range(4, 6)],
-            num_rounds_list=[10 ** i for i in range(3, 5)],
-            trials=10):
+            users_per_bucket_list=[100],
+            num_rounds_list=[100],
+            trials=2):
         """Runs in parallel every possible scenario
 
         Looks complicated, but no real way to simplify it
@@ -64,7 +64,7 @@ class Combination_Grapher(Base_Grapher):
 
         if ddos_sim_cls_list is None:
             ddos_sim_cls_list =\
-                [ddos_simulator.DDOS_Simulator.runnable_simulators[0]]
+                [ddos_simulator.DDOS_Simulator.runnable_simulators[1]]
 
         # Initializes graph path
         self.make_graph_dir(destroy=True)
@@ -106,23 +106,14 @@ class Combination_Grapher(Base_Grapher):
 
         # If we are debugging, no multiprocessing
         # https://stackoverflow.com/a/1987484/8903959
-        if (self.stream_level == Log_Levels.DEBUG
-            # https://stackoverflow.com/a/58866220/8903959
-            or "PYTEST_CURRENT_TEST" in os.environ):
-
-            for i in range(total):
-                try:
-                    current_args = [x[i] for x in full_args]
-                    self.get_graph_data(*current_args)
-                except Exception as e:
-                    from pprint import pprint
-                    pprint(current_args)
-                    raise e
-        else:
-            p.map(self.get_graph_data, *full_args)
-            p.close()
-            p.join()
-            p.clear()
+        for i in range(total):
+            try:
+                current_args = [x[i] for x in full_args]
+                self.get_graph_data(*current_args)
+            except Exception as e:
+                from pprint import pprint
+                pprint(current_args)
+                raise e
         # Get rid of carriage returns
         print()
 
@@ -150,7 +141,7 @@ class Combination_Grapher(Base_Grapher):
 
         for attacker in attackers:
             self.print_progress(attacker, total_num)
-            percent_attackers_list = [i / 100 for i in range(1, 92, 5)]
+            percent_attackers_list = [i / 100 for i in range(1, 52, 5)]
 
             for manager in managers:
                 manager_data = scenario_data[manager][attacker]
@@ -207,6 +198,7 @@ class Combination_Grapher(Base_Grapher):
         good_users = users - attackers
         # No longer used, but maybe in the future
         threshold = 0
+        print(str(attacker) + " " + str(percent_attackers))
         sim = ddos_sim_cls(good_users,
                            attackers,
                            num_buckets,

@@ -18,7 +18,6 @@ from flask import request, jsonify
 from ..attackers import Attacker
 from ..simulation_objects import User
 
-from . import tests
 
 # https://stackoverflow.com/a/32965521/8903959
 version = pkg_resources.get_distribution('lib_ddos_simulator').version
@@ -60,7 +59,7 @@ def init_sim(app, user_ids, num_buckets, manager_cls, system_id):
     # Threshold is used in test code
     app.managers[system_id] = manager_cls(num_buckets,
                                           users,
-                                          tests.Test_API.test_threshold)
+                                          -1)
 
 
 def complete_turn(app, downed_bucket_ids, system_id):
@@ -74,7 +73,7 @@ def complete_turn(app, downed_bucket_ids, system_id):
         for bucket in manager.get_buckets_by_ids(downed_bucket_ids):
             bucket.attacked = True
     # Turn is used in test code
-    manager.take_action(turn=tests.Test_API.test_turn)
+    manager.take_action(turn=-1)
 
 def connect_disconnect_uids(app, connecting_uids, disconnecting_uids, sys_id):
     """Connects and disconnects users"""

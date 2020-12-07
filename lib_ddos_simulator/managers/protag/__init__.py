@@ -11,5 +11,3 @@ __status__ = "Development"
 from .protag_manager_base import Protag_Manager_Base
 from .protag_manager_merge import Protag_Manager_Merge
 from .protag_manager_no_merge import Protag_Manager_No_Merge
-from .protag_manager_smart_merge import Protag_Manager_Smart_Merge
-from .protag_manager_smart_merge_conservative import Protag_Manager_Smart_Merge_Conservative

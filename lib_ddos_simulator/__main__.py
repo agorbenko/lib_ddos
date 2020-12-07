@@ -13,9 +13,9 @@ import os
 from sys import argv
 
 from .api import create_app
-from .attackers import Basic_Attacker, Even_Turn_Attacker
+from .attackers import Basic_Attacker
 from .ddos_simulators import DDOS_Simulator, Fluid_DDOS_Simulator
-from .managers import Manager, Protag_Manager_Smart_Merge, Sieve_Manager_V0_S0, Sieve_Manager_V1_S0
+from .managers import Manager
 from .utils import Log_Levels
 from .graphers import Combination_Grapher
 
@@ -35,7 +35,7 @@ def main():
     parser.add_argument("--tikz", dest="tikz", default=False, action="store_true")
     parser.add_argument("--save", dest="save", default=False, action="store_true")
     parser.add_argument("--high_res", dest="high_res", default=False, action="store_true")
-    parser.add_argument("--trials", type=int, dest="trials", default=10)
+    parser.add_argument("--trials", type=int, dest="trials", default=2)
     parser.add_argument("--graph_dir", type=str, dest="graph_dir", default=os.path.join("/tmp", "lib_ddos_simulator"))
     parser.add_argument("--api", dest="api", default=False, action="store_true")
 
@@ -45,8 +45,8 @@ def main():
     if args.api:
         create_app().run(debug=True)
     elif args.animate:
-        for sim_cls in reversed(DDOS_Simulator.runnable_simulators):
-            for atk_cls in [Basic_Attacker, Even_Turn_Attacker]:
+        for sim_cls in [DDOS_Simulator.runnable_simulators[1]]:
+            for atk_cls in [Basic_Attacker]:
                 # NOTE: for optimal animations,
                 # use 24, 4, 8, 10 for users, attackers, buckets, threshold
                 sim_cls(args.num_users,  # number of users

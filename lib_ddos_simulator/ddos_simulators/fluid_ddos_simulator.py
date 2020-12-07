@@ -29,24 +29,29 @@ class Fluid_DDOS_Simulator(DDOS_Simulator):
         Should return a list of user ids to add"""
 
         random.seed(str(manager.json) + str(round_num))
-        og_users = self.og_num_attackers = self.og_num_users
+        og_users = self.og_num_attackers + self.og_num_users
         og_percent_users = self.og_num_users / og_users
 
         current_good_users = len([1 for x in manager.connected_users
                                  if not isinstance(x, Attacker)])
         current_attackers = len(manager.connected_users) - current_good_users
         current_percent_users = current_good_users / len(manager.connected_users)
+        connected = len(manager.connected_users)
 
+        ids = []
+        while random.random() > og_percent_users:
+            _id = self.next_unused_user_id
+            self.next_unused_user_id += 1
+            ids.append(_id)
+        while current_percent_users < og_percent_users:
+            _id = self.next_unused_user_id
+            self.next_unused_user_id += 1
+            ids.append(_id)
+            current_good_users += 1
+            connected += 1
+            current_percent_users = current_good_users / connected
 
-        if random.random() > og_percent_users or current_percent_users < og_percent_users:
-            if len(manager.disconnected_users) > 2 and random.random() > .5:
-                return [manager.disconnected_users[0].id]
-            else:
-                _id = self.next_unused_user_id
-                self.next_unused_user_id += 1
-                return [_id]
-        else:
-            return []
+        return ids
 
     def add_attackers(self, manager, round_num):
         """Adds attackers to sim (connects them). Override this method
@@ -56,17 +61,30 @@ class Fluid_DDOS_Simulator(DDOS_Simulator):
         # NOTE: must always use random.seed
         # NOTE: encode this elsewhere
         random.seed(str(manager.json) + str(round_num))
-        og_users = self.og_num_attackers = self.og_num_users
+        og_users = self.og_num_attackers + self.og_num_users
         percent_attackers = self.og_num_attackers / og_users
 
         current_good_users = len([1 for x in manager.connected_users
                                  if not isinstance(x, Attacker)])
         current_attackers = len(manager.connected_users) - current_good_users
         current_percent_attackers = current_attackers / len(manager.connected_users)
+        connected = len(manager.connected_users)
 
-        if random.random() > percent_attackers or current_percent_attackers < percent_attackers:
+        ids = []
+
+        while random.random() > .5:
             _id = self.next_unused_user_id
             self.next_unused_user_id += 1
-            return [_id]
-        else:
-            return []
+            ids.append(_id)
+            current_attackers += 1
+            connected += 1
+
+        while current_percent_attackers < percent_attackers:
+            _id = self.next_unused_user_id
+            self.next_unused_user_id += 1
+            ids.append(_id)
+            current_attackers+=1
+            connected += 1
+            current_percent_attackers = current_attackers / connected
+
+        return ids

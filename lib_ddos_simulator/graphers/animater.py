@@ -52,7 +52,7 @@ from .base_grapher import Base_Grapher
 
 from ..attackers import Attacker
 from ..simulation_objects import Bucket, User
-from ..managers import Manager, Sieve_Manager_Base
+from ..managers import Manager
 
 class Bucket_States(Enum):
     USED = 1

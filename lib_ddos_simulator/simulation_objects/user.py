@@ -10,20 +10,18 @@ __status__ = "Development"
 
 from math import e
 import random
+import sys
+import time
 
 class User:
     """Simulates a user for a DDOS attack"""
 
     # patch, text used in animations
-    __slots__ = ["id", "suspicion", "bucket", "patch", "text", "points",
-                 "suspicions", "exp_conn_lt", "conn_lt", "dose_atk_risk",
-                 "track_suspicion", "status", "turns_attacked_in_a_row",
-                 "random_sort_id"]
-
     # Used in animations
     patch_radius = 1
     patch_padding = .25
     og_face_color = "g"
+    f = open("/home/anon/Desktop/ddos_fvecs.csv", "a")
 
     def __init__(self, identifier: int, suspicion: float = 0, bucket=None):
         """Stores user values"""
@@ -45,17 +43,50 @@ class User:
         self.dose_atk_risk = 0
         self.status = None
         self.turns_attacked_in_a_row = 0
+        ###################################
+        self.previously_attacked = False
+        self.turns_before_first_attack = 0
+        self.turns_attacked = 0
+        self.bucket_ids = dict()
         self.random_sort_id = random.random()
 
-    def take_action(self, *args):  # Note that args are manager, turn
+    def take_action(self, manager, turn, *args):  # Note that args are manager, turn
         """Action that user takes every round"""
+
+        self.manager = manager
 
         # Used in DOSE for connection lifetime
         self.conn_lt += 1
+
         if self.bucket.attacked:
+            self.bucket_ids[self.bucket.id] = self.bucket_ids.get(self.bucket.id, 0) + 1
+            self.previously_attacked = True
             self.turns_attacked_in_a_row += 1
+            self.turns_attacked += 1
         else:
+            if self.previously_attacked is False:
+                self.turns_before_first_attack += 1
             self.turns_attacked_in_a_row = 0
+
+        from ..attackers import Attacker
+
+        fvec = self.fvec + [int(isinstance(self, Attacker))]
+
+        if "animate" not in str(sys.argv):
+            time.sleep(.0001)
+            User.f.write(",".join(str(x) for x in fvec) + "\n")
+
+    @property
+    def fvec(self):
+         return [int(self.previously_attacked),
+                 self.turns_attacked_in_a_row,
+                 self.turns_attacked_in_a_row / self.conn_lt,
+                 self.conn_lt,
+                 self.conn_lt / self.exp_conn_lt,
+                 self.turns_before_first_attack,
+                 len(self.bucket_ids),
+                 len(self.manager.attacked_buckets) / len(self.manager.used_buckets),
+                 int(self.bucket.attacked)]
 
     def disconnect(self, round_num):
         """Inherit to include when user will disconnect"""
