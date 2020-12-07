@@ -9,8 +9,6 @@ __email__ = "jfuruness@gmail.com, agorbenko97@gmail.com"
 __status__ = "Development"
 
 from .basic_attacker import Basic_Attacker, Basic_Lone_Attacker
-from .never_last_attacker import Never_Last_Attacker
-from .never_last_attacker import Never_Last_Lone_Attacker
 from .random_attacker import Fifty_Percent_Attacker
 from .random_attacker import Fifty_Percent_Lone_Attacker
 
