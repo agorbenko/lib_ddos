@@ -71,7 +71,10 @@ class Fluid_DDOS_Simulator(DDOS_Simulator):
             ids.append(_id)
             current_attackers += 1
 
-        while current_attackers < self.og_num_attackers / 5:
+        divisor = 5
+        if "dl" in manager.__class__.__name__.lower():
+            divisor = 15
+        while current_attackers < self.og_num_attackers / divisor:
             _id = self.next_unused_user_id
             self.next_unused_user_id += 1
             ids.append(_id)

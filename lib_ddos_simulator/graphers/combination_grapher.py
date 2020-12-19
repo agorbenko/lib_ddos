@@ -141,7 +141,7 @@ class Combination_Grapher(Base_Grapher):
 
         for attacker in attackers:
             self.print_progress(attacker, total_num)
-            percent_attackers_list = [i / 100 for i in range(10, 52, 20)]
+            percent_attackers_list = [i / 100 for i in range(5, 52, 10)]
 
             for manager in managers:
                 manager_data = scenario_data[manager][attacker]

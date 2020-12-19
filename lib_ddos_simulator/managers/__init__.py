@@ -10,6 +10,8 @@ __status__ = "Development"
 
 
 from .dl_manager import DL_Manager
+from .dl_manager2 import DL_Manager2
+from .dl_manager3 import DL_Manager3
 from .dose import DOSE_Manager, DOSE_Attack_Event
 # Commented out due to bugs in sudo code of their paper
 # from .motag import Motag_Manager

@@ -25,30 +25,29 @@ def main():
 
 
     model_folder = os.path.join(os.getcwd(), "model")
-    if os.path.exists(model_folder):
-        import tensorflow as tf
-        model = tf.keras.models.load_model(model_folder + "/tf_model")
+    import tensorflow as tf
     if not os.path.exists(model_folder):
+        #model = tf.keras.models.load_model(model_folder + "/tf_model")
         os.makedirs(model_folder)
 
-        import tensorflow as tf
+    import tensorflow as tf
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from sklearn import preprocessing
+    
+    from subprocess import check_call
+    check_call("wget https://raw.githubusercontent.com/jfuruness/ddos_fvecs/main/ddos_fvecs.csv", shell=True)
+    
+    # There are only two columns in this data
+    data = pd.read_csv('ddos_fvecs.csv')
+    check_call("rm ddos_fvecs.csv", shell=True)
+    print(data.shape)
+    # Make this a 2d array of size NXD where D=1 rather than a 1D array of length N
+    X = data.iloc[:, :-1]#preprocessing.MinMaxScaler().fit_transform(data.iloc[:, :-1])
+    Y = data.iloc[:, -1]
 
-        import pandas as pd
-        import numpy as np
-        import matplotlib.pyplot as plt
-        from sklearn import preprocessing
-    
-        from subprocess import check_call
-        check_call("wget https://raw.githubusercontent.com/jfuruness/ddos_fvecs/main/ddos_fvecs.csv", shell=True)
-    
-        # There are only two columns in this data
-        data = pd.read_csv('ddos_fvecs.csv')
-        check_call("rm ddos_fvecs.csv", shell=True)
-        print(data.shape)
-        # Make this a 2d array of size NXD where D=1 rather than a 1D array of length N
-        X = data.iloc[:, :-1]#preprocessing.MinMaxScaler().fit_transform(data.iloc[:, :-1])
-        Y = data.iloc[:, -1]
-    
+    if not os.path.exists(model_folder + "/tf_model"):
         model = tf.keras.models.Sequential([
           tf.keras.layers.Flatten(input_shape=[9]),
           tf.keras.layers.Dense(32, activation="relu"),
@@ -75,7 +74,61 @@ def main():
     
     
         plt.plot(r.history['loss'], label='loss')
-        model.save(os.path.join(model_folder, "tf_model"))
+        model.save(os.path.join(model_folder, "tf_model1"))
+
+    if not os.path.exists(model_folder + "/tf_model2"):
+        model = tf.keras.models.Sequential([
+          tf.keras.layers.Flatten(input_shape=[9]),
+          tf.keras.layers.Dense(16, activation="relu"),
+          tf.keras.layers.Dropout(.1),
+          tf.keras.layers.Dense(8, activation="relu"),
+          tf.keras.layers.Dropout(.05),
+          tf.keras.layers.Dense(2, activation="sigmoid")
+        ])
+
+        # Learning rate scheduler
+        def schedule(epoch, lr):
+          if epoch >= 50:
+            return 0.0001
+          else:
+            return 0.001
+
+        scheduler = tf.keras.callbacks.LearningRateScheduler(schedule)
+        model.compile(optimizer="adam",
+                      loss="sparse_categorical_crossentropy",
+                      metrics=["accuracy"])
+        r = model.fit(X, Y, epochs=1, callbacks=[scheduler])
+
+
+        plt.plot(r.history['loss'], label='loss')
+        model.save(os.path.join(model_folder, "tf_model2"))
+    if not os.path.exists(model_folder + "/tf_model3"):
+        model = tf.keras.models.Sequential([
+          tf.keras.layers.Flatten(input_shape=[9]),
+          tf.keras.layers.Dense(32, activation="relu"),
+          tf.keras.layers.Dense(16, activation="relu"),
+          tf.keras.layers.Dense(8, activation="relu"),
+          tf.keras.layers.Dense(2, activation="sigmoid")
+        ])
+
+        # Learning rate scheduler
+        def schedule(epoch, lr):
+          if epoch >= 50:
+            return 0.0001
+          else:
+            return 0.001
+
+        scheduler = tf.keras.callbacks.LearningRateScheduler(schedule)
+        model.compile(optimizer="adam",
+                      loss="sparse_categorical_crossentropy",
+                      metrics=["accuracy"])
+        r = model.fit(X, Y, epochs=1, callbacks=[scheduler])
+
+
+        plt.plot(r.history['loss'], label='loss')
+        model.save(os.path.join(model_folder, "tf_model3"))
+
+
 
     
     parser = ArgumentParser(description="Runs a DDOS simulation")
